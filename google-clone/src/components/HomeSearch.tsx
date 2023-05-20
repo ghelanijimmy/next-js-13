@@ -64,7 +64,7 @@ const HomeSearch = () => {
           onClick={(e) => randomSearch(e)}
           className="btn"
         >
-          {(!isLoading && (
+          {(isLoading && (
             <Image
               src="spinner.svg"
               alt="Loading"
