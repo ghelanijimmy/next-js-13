@@ -1,33 +1,39 @@
 "use client";
 import React, { FormEvent, MouseEvent, useState } from "react";
 import { AiOutlineSearch, BsFillMicFill } from "react-icons/all";
-import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { useSearch } from "@/hooks/useSearch";
 
 const HomeSearch = () => {
-  const [inputValue, setInputValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [disableSearch, setDisableSearch] = useState(false);
 
-  const router = useRouter();
+  const {
+    search,
+    searchTerm: inputValue,
+    setSearchTerm: setInputValue,
+  } = useSearch();
 
   const handleSubmit = (e: MouseEvent | FormEvent) => {
-    setIsLoading(true);
+    setDisableSearch(true);
     e.preventDefault();
     if (inputValue.trim()) {
-      router.push(`/search/web?searchTerm=${inputValue}`);
+      search("/search/web");
     }
   };
 
   const randomSearch = async (e: MouseEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setDisableSearch(true);
     const res = await fetch("https://random-word-api.herokuapp.com/word");
     const data = await res.json();
     if (!res.ok) {
       setIsLoading(false);
+      setDisableSearch(false);
       throw new Error(data.message || "Something went wrong!");
     }
-    router.push(`/search/web?searchTerm=${data[0]}`);
+    search("/search/web", data[0]);
   };
 
   return (
@@ -53,14 +59,14 @@ const HomeSearch = () => {
       </form>
       <div className="flex space-y-2 flex-col sm:flex-row sm:gap-4 sm:space-y-0 justify-center items-center mt-8">
         <button
-          disabled={isLoading}
+          disabled={disableSearch}
           onClick={(e) => handleSubmit(e)}
           className="btn"
         >
           Google Search
         </button>
         <button
-          disabled={isLoading}
+          disabled={disableSearch}
           onClick={(e) => randomSearch(e)}
           className="btn"
         >
